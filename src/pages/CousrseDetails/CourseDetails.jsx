@@ -36,28 +36,54 @@ export default function CourseDetails() {
 
     const alreadyEnrolled = !!myEnrollments?.find((e) => e.course?._id === id);
 
+    // const handleEnroll = async () => {
+    //     // if user object not present but token exists, attempt to fetch profile
+    //     // if (!user && token) {
+    //     //     try {
+    //     //         await dispatch(getMeAsync()).unwrap();
+    //     //     } catch (err) {
+    //     //         // ignore, will redirect to login below
+    //     //     }
+    //     // }
+
+    //     // if (!user && !isAuthenticated) {
+    //     //     navigate("/login");
+    //     //     return;
+    //     // }
+
+    //     // if (cannotEnroll) return;
+    //      if (!token) {
+    //     navigate("/login");
+    //     return;
+    // }
+
+    // if (cannotEnroll) return;
+
+
+    // if (enrolling) return;
+
+    //     // Note: Since batches don't have _id in the model, we pass null
+    //     // The backend can be updated later to handle batch references properly
+    //     dispatch(enrollCourseAsync({ courseId: id, batchId: selectedBatchId !== null ? selectedBatchId.toString() : null }));
+    // };
+
     const handleEnroll = async () => {
-        // if user object not present but token exists, attempt to fetch profile
-        if (!user && token) {
-            try {
-                await dispatch(getMeAsync()).unwrap();
-            } catch (err) {
-                // ignore, will redirect to login below
-            }
-        }
+    // ✅ শুধু token আছে কি না check করুন
+    if (!token) {
+        navigate("/login");
+        return;
+    }
 
-        if (!user && !isAuthenticated) {
-            navigate("/login");
-            return;
-        }
+    if (cannotEnroll) return;
 
-        if (cannotEnroll) return;
+    // ✅ Double-click prevent
+    if (enrolling) return;
 
-        // Note: Since batches don't have _id in the model, we pass null
-        // The backend can be updated later to handle batch references properly
-        dispatch(enrollCourseAsync({ courseId: id, batchId: selectedBatchId !== null ? selectedBatchId.toString() : null }));
-    };
-
+    dispatch(enrollCourseAsync({ 
+        courseId: id, 
+        batchId: selectedBatchId !== null ? selectedBatchId.toString() : null 
+    }));
+};
     useEffect(() => {
         if (success) {
             const timer = setTimeout(() => {
@@ -113,7 +139,9 @@ export default function CourseDetails() {
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent',
                             backgroundClip: 'text'
-                        }}>৳ {course.price * 100}</p>
+                        }}>৳ {course.price?.toLocaleString()}</p>
+                            {/* //৳ {course.price * 100}</p> */}
+
 
                         <div>
                             {isAdmin ? (
@@ -285,7 +313,8 @@ export default function CourseDetails() {
                                 );
                             })}
                         </div>
-                        {selectedBatchId && (
+                         {/* {selectedBatchId &&  */}
+                        {selectedBatchId !== null && (
                             <div className="mt-3 text-sm text-primary">
                                 ✓ Batch selected for enrollment
                             </div>

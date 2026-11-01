@@ -10,6 +10,7 @@ import CourseDetails from "./pages/CousrseDetails/CourseDetails";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import NotFound from "./pages/NotFound/NotFound";
+import Profile from "./pages/Profile/Profile";
 
 // Lazy load heavy components for code splitting
 const CoursePlayer = lazy(() => import("./pages/CoursePlayer/CoursePlayer"));
@@ -44,6 +45,16 @@ export default function App() {
           <Route path="/courses/:id" element={<CourseDetails />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+         
+          <Route
+  path="/profile"
+  element={
+    <ProtectedRoute>
+      <Profile />
+    </ProtectedRoute>
+  }
+/>
+          
 
           {/* student dashboard (protected) */}
           <Route

@@ -9,6 +9,7 @@ import { getCourseById } from "../../services/courses.api";
 export default function StudentDashboard() {
     const dispatch = useDispatch();
     const { enrollments, loading, error } = useSelector((state) => state.enrollment);
+   
     const { currentCourse } = useSelector((state) => state.courses);
 
     const [expandedCourse, setExpandedCourse] = useState(null);
@@ -169,7 +170,9 @@ export default function StudentDashboard() {
                 </div>
             )}
 
-            {enrollments.length === 0 ? (
+            {/* {enrollments.length === 0 ? */}
+            {(enrollments || []).length === 0 ? (
+            
                 <div className="card bg-base-200">
                     <div className="card-body text-center py-12">
                         <h2 className="card-title justify-center">No courses enrolled yet</h2>
@@ -256,11 +259,19 @@ export default function StudentDashboard() {
                                                     return null;
                                                 })()}
                                             </div>
-                                            <div className="text-right">
+                                            {/* bug code */}
+                                            {/* <div className="text-right">
                                                 <p className="text-2xl sm:text-3xl font-bold text-primary">
                                                     {Math.round((enrollment.progress?.completedLessons?.length / (stats?.courseData?.syllabus?.reduce((acc, m) => acc + (m.lessons?.length || 0), 0))) * 100)}%
                                                 </p>
-                                            </div>
+                                            </div> */}
+
+                                            {/* fix code */}
+                                            <div className="text-right">
+    <p className="text-2xl sm:text-3xl font-bold text-primary">
+        {enrollment.progress?.percent || 0}%
+    </p>
+</div>
                                         </div>
                                         <progress
                                             className="progress progress-primary w-full h-4"

@@ -83,7 +83,7 @@ export default function Navbar() {
                     {!token && (
                         <div className="hidden md:flex gap-2">
                             <Link to="/login" className="btn btn-sm btn-ghost">Login</Link>
-                            <Link to="/register" className="btn btn-sm btn-primary">Enroll Now</Link>
+                            <Link to="/register" className="btn btn-sm btn-primary">Register</Link>
                         </div>
                     )}
 

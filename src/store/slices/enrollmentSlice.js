@@ -69,6 +69,9 @@ const enrollmentSlice = createSlice({
             .addCase(enrollCourseAsync.fulfilled, (state, action) => {
                 state.enrolling = false;
                 state.success = "Successfully enrolled!";
+                if (!Array.isArray(state.enrollments)) {
+        state.enrollments = [];
+    }
                 state.enrollments.push(action.payload);
             })
             .addCase(enrollCourseAsync.rejected, (state, action) => {
@@ -79,11 +82,18 @@ const enrollmentSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
+            // .addCase(fetchMyEnrollments.fulfilled, (state, action) => {
+            //     state.loading = false;
+            //     // Code-6 bug: action.payload is the array, but trying to access .data makes it undefined
+            //     state.enrollments = action.payload.data;
+            // })
+
             .addCase(fetchMyEnrollments.fulfilled, (state, action) => {
-                state.loading = false;
-                // Code-6 bug: action.payload is the array, but trying to access .data makes it undefined
-                state.enrollments = action.payload.data;
-            })
+    state.loading = false;
+    state.enrollments = Array.isArray(action.payload) 
+        ? action.payload 
+        : (action.payload?.enrollments || []);
+})
             .addCase(fetchMyEnrollments.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;

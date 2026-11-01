@@ -18,6 +18,13 @@ export default function CreateCourse() {
         batches: [],
         syllabus: [],
     });
+    const toLocalISO = (d) => {
+        const date = new Date(d);
+        date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+        return date.toISOString().slice(0, 16);
+    };
+
+    const todayStart = toLocalISO(new Date(new Date().setHours(0, 0, 0, 0)));
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -182,6 +189,9 @@ export default function CreateCourse() {
                         />
                     </div>
                 </div>
+
+
+
 
                 {/* Syllabus Section */}
                 <div className="divider">Course Syllabus (Modules & Lessons)</div>
@@ -406,7 +416,8 @@ export default function CreateCourse() {
                                                                     placeholder="https://meet.google.com/xxx-xxxx-xxx or https://zoom.us/j/xxxxx"
                                                                     className="input input-bordered input-sm w-full"
                                                                 />
-                                                                <input
+                                                                {/* bug code */}
+                                                                {/* <input
                                                                     type="datetime-local"
                                                                     value={lesson?.liveClassDate ? new Date(lesson.liveClassDate).toISOString().slice(0, 16) : ""}
                                                                     onChange={(e) => {
@@ -428,7 +439,60 @@ export default function CreateCourse() {
                                                                         setForm({ ...form, syllabus: newSyllabus });
                                                                     }}
                                                                     className="input input-bordered input-sm w-full"
-                                                                />
+                                                                /> */}
+                                                                {/* fix code */}
+                                                                <input
+    type="datetime-local"
+    value={lesson?.liveClassDate ? toLocalISO(lesson.liveClassDate) : ""}
+    min={todayStart}
+    onChange={(e) => {
+        const raw = e.target.value;
+
+        // খালি করলে allow
+        if (!raw) {
+            const newSyllabus = form.syllabus.map((mod, mIdx) => {
+                if (mIdx === modIdx) {
+                    const newLessons = mod.lessons.map((les, lIdx) =>
+                        lIdx === lesIdx ? { ...les, liveClassDate: "" } : les
+                    );
+                    return { ...mod, lessons: newLessons };
+                }
+                return mod;
+            });
+            setForm({ ...form, syllabus: newSyllabus });
+            return;
+        }
+
+        // Past date block
+        const selected = new Date(raw);
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+
+        if (selected < startOfToday) {
+            e.target.value = lesson?.liveClassDate
+                ? toLocalISO(lesson.liveClassDate)
+                : "";
+            alert("Previous date is not allowed. Please select today or a future date.");
+            return;
+        }
+
+        // Valid → save
+        const newSyllabus = form.syllabus.map((mod, mIdx) => {
+            if (mIdx === modIdx) {
+                const newLessons = mod.lessons.map((les, lIdx) => {
+                    if (lIdx === lesIdx) {
+                        return { ...les, liveClassDate: selected.toISOString() };
+                    }
+                    return les;
+                });
+                return { ...mod, lessons: newLessons };
+            }
+            return mod;
+        });
+        setForm({ ...form, syllabus: newSyllabus });
+    }}
+    className="input input-bordered input-sm w-full"
+/>
                                                             </div>
                                                         )}
                                                     </div>
